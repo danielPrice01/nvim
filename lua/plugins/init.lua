@@ -1,20 +1,6 @@
 -- lua/plugins/init.lua
 
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup({
+return {
 
   ------------------------------------------------------------------------------
   -- Colorscheme
@@ -83,7 +69,7 @@ require("lazy").setup({
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
+    lazy = false,   -- <<< IMPORTANT FIX — load Treesitter at startup
     config = function()
       require("plugins.treesitter")
     end,
@@ -106,10 +92,7 @@ require("lazy").setup({
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim" },
-
-    -- IMPORTANT: lazy-load Harpoon AFTER startup
     event = "VeryLazy",
-
     config = function()
       require("plugins.harpoon")
     end,
@@ -135,4 +118,4 @@ require("lazy").setup({
     end,
   },
 
-})
+}

@@ -41,6 +41,7 @@ map("n", "<leader>bN", ":enew<CR>",                      { desc = "New empty buf
 map("n", "<leader>bd", ":bdelete<CR>",                   { desc = "Delete buffer" })
 
 map("n", "<leader>bl", ":ls<CR>",                        { desc = "List buffers" })
+map("n", "<leader>bc", ":%bd | e# | bd#<CR>",            { desc = "Close all other buffers", silent = true })
 
 -------------------------------------------------------------------------------
 -- Harpoon (lazy-safe!) 
