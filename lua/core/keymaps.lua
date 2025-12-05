@@ -63,11 +63,13 @@ map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
 -- Window Resizing
 -------------------------------------------------------------------------------
 
--- Resize splits with arrow keys
-map("n", "<C-Up>",    ":resize +2<CR>", opts)
-map("n", "<C-Down>",  ":resize -2<CR>", opts)
-map("n", "<C-Left>",  ":vertical resize -2<CR>", opts)
-map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
+-- Grow / shrink height
+map("n", "<leader>+", ":resize +3<CR>", opts)
+map("n", "<leader>-", ":resize -3<CR>", opts)
+
+-- Grow / shrink width
+map("n", "<leader>>", ":vertical resize +3<CR>", opts)
+map("n", "<leader><", ":vertical resize -3<CR>", opts)
 
 -------------------------------------------------------------------------------
 -- Window Management
