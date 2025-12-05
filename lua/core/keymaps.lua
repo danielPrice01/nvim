@@ -2,52 +2,99 @@
 
 local map = vim.keymap.set
 local opts = { silent = true, noremap = true }
-
 -------------------------------------------------------------------------------
 -- Telescope (fuzzy finding)
 -------------------------------------------------------------------------------
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>",  { desc = "Find files" })
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>",   { desc = "Grep in project" })
-map("n", "<leader>fb", "<cmd>Telescope buffers<cr>",     { desc = "Find buffers" })
-map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>",   { desc = "Help" })
+
+-- Live grep from CWD
+map("n", "<leader>fg", function()
+  local builtin = require("telescope.builtin")
+  builtin.live_grep({
+    prompt_title = "Live Grep (CWD)",
+    cwd = vim.loop.cwd(),
+  })
+end, { desc = "Live grep (cwd)" })
+
+-- Live grep but ONLY in current directory (no recursion)
+map("n", "<leader>fl", function()
+  local builtin = require("telescope.builtin")
+  builtin.live_grep({
+    prompt_title = "Live Grep (This Directory Only)",
+    cwd = vim.loop.cwd(),
+    additional_args = function()
+      return { "--max-depth", "1" }
+    end,
+  })
+end, { desc = "Live grep (local dir only)" })
+
+-- Directory picker → then grep
+map("n", "<leader>fD", function()
+  local builtin = require("telescope.builtin")
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+
+  builtin.find_files({
+    prompt_title = "Choose Directory",
+    cwd = vim.loop.cwd(),
+    find_command = { "fd", "-t", "d" },
+
+    attach_mappings = function(prompt_bufnr, map)
+      map("i", "<CR>", function()
+        local entry = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        local dir = entry.path or entry.value
+
+        builtin.live_grep({
+          prompt_title = ("Live Grep (%s)"):format(dir),
+          cwd = dir,
+        })
+      end)
+      return true
+    end,
+  })
+end, { desc = "Live grep (choose directory)" })
 
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
-map("n", "<leader>e", ":NERDTreeToggle<CR>",             { desc = "File explorer" })
+map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
 
 -------------------------------------------------------------------------------
--- Window Navigation
+-- Window Resizing
 -------------------------------------------------------------------------------
-map("n", "<leader>wh", "<C-w>h", opts)                    -- move left
-map("n", "<leader>wj", "<C-w>j", opts)                    -- move down
-map("n", "<leader>wk", "<C-w>k", opts)                    -- move up
-map("n", "<leader>wl", "<C-w>l", opts)                    -- move right
+
+-- Resize splits with arrow keys
+map("n", "<C-Up>",    ":resize +2<CR>", opts)
+map("n", "<C-Down>",  ":resize -2<CR>", opts)
+map("n", "<C-Left>",  ":vertical resize -2<CR>", opts)
+map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -------------------------------------------------------------------------------
 -- Window Management
 -------------------------------------------------------------------------------
-map("n", "<leader>wv", "<C-w>v", opts)                    -- vertical split
-map("n", "<leader>ws", "<C-w>s", opts)                    -- horizontal split
-map("n", "<leader>wx", "<C-w>c", opts)                    -- close window
+map("n", "<leader>wv", "<C-w>v", opts)
+map("n", "<leader>ws", "<C-w>s", opts)
+map("n", "<leader>wx", "<C-w>c", opts)
 
 -------------------------------------------------------------------------------
 -- Buffer Management
 -------------------------------------------------------------------------------
-map("n", "<leader>bn", ":bnext<CR>",                     { desc = "Next buffer" })
-map("n", "<leader>bp", ":bprevious<CR>",                 { desc = "Previous buffer" })
+map("n", "<leader>bn", ":bnext<CR>",     { desc = "Next buffer" })
+map("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
+map("n", "<leader>bN", ":enew<CR>",      { desc = "New empty buffer" })
+map("n", "<leader>bd", ":bdelete<CR>",   { desc = "Delete buffer" })
+map("n", "<leader>bl", ":ls<CR>",        { desc = "List buffers" })
 
-map("n", "<leader>bN", ":enew<CR>",                      { desc = "New empty buffer" })
-map("n", "<leader>bd", ":bdelete<CR>",                   { desc = "Delete buffer" })
-
-map("n", "<leader>bl", ":ls<CR>",                        { desc = "List buffers" })
-map("n", "<leader>bc", ":%bd | e# | bd#<CR>",            { desc = "Close all other buffers", silent = true })
+-- Close all buffers except current
+map("n", "<leader>bc", ":%bd | e# | bd#<CR>", {
+  desc = "Close all other buffers",
+  silent = true,
+})
 
 -------------------------------------------------------------------------------
--- Harpoon (lazy-safe!) 
+-- Harpoon (lazy-safe!)
 -------------------------------------------------------------------------------
 
--- Wrapper so Harpoon loads only when needed, avoiding startup errors
 local function with_harpoon(callback)
   return function(...)
     local ok, harpoon = pcall(require, "harpoon")
@@ -59,17 +106,14 @@ local function with_harpoon(callback)
   end
 end
 
--- Add file to Harpoon
 map("n", "<leader>a", with_harpoon(function(h)
   h:list():append()
 end), { desc = "Harpoon add file" })
 
--- Open Harpoon quick menu
 map("n", "<leader>h", with_harpoon(function(h)
   h.ui:toggle_quick_menu(h:list())
 end), { desc = "Harpoon menu" })
 
--- Quick jumps
 map("n", "<leader>1", with_harpoon(function(h) h:list():select(1) end))
 map("n", "<leader>2", with_harpoon(function(h) h:list():select(2) end))
 map("n", "<leader>3", with_harpoon(function(h) h:list():select(3) end))
@@ -79,13 +123,13 @@ map("n", "<leader>5", with_harpoon(function(h) h:list():select(5) end))
 -------------------------------------------------------------------------------
 -- Reload Config
 -------------------------------------------------------------------------------
-map("n", "<leader>r", ":Lazy reload<CR>",                { desc = "Reload config" })
+map("n", "<leader>r", ":Lazy reload<CR>", { desc = "Reload config" })
 
 -------------------------------------------------------------------------------
 -- Quality of Life
 -------------------------------------------------------------------------------
-map("n", "<C-d>", "<C-d>zz", opts)                       -- centered scrolling
+map("n", "<C-d>", "<C-d>zz", opts)
 map("n", "<C-u>", "<C-u>zz", opts)
 
--- Exit terminal mode
-map("t", [[<C-\><C-n>]], "<Esc><Esc>", opts)
+-- Exit terminal mode quickly
+map("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)
