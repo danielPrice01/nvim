@@ -62,15 +62,41 @@ map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
 -------------------------------------------------------------------------------
 -- Window Resizing
 -------------------------------------------------------------------------------
+-- Increase window height
+map("n", "<leader>+", function()
+  local step = 5 * vim.v.count1
+  vim.cmd("resize +" .. step)
+end, {
+  desc = "Increase window height",
+  silent = true,
+})
 
--- Grow / shrink height
-map("n", "<leader>+", ":resize +3<CR>", opts)
-map("n", "<leader>-", ":resize -3<CR>", opts)
+-- Decrease window height
+map("n", "<leader>-", function()
+  local step = 5 * vim.v.count1
+  vim.cmd("resize -" .. step)
+end, {
+  desc = "Decrease window height",
+  silent = true,
+})
 
--- Grow / shrink width
-map("n", "<leader>>", ":vertical resize +3<CR>", opts)
-map("n", "<leader><", ":vertical resize -3<CR>", opts)
+-- Decrease window width
+map("n", "<leader><", function()
+  local step = 5 * vim.v.count1
+  vim.cmd("vertical resize -" .. step)
+end, {
+  desc = "Decrease window width",
+  silent = true,
+})
 
+-- Increase window width
+map("n", "<leader>>", function()
+  local step = 5 * vim.v.count1
+  vim.cmd("vertical resize +" .. step)
+end, {
+  desc = "Increase window width",
+  silent = true,
+})
 -------------------------------------------------------------------------------
 -- Window Management
 -------------------------------------------------------------------------------
