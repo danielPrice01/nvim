@@ -10,3 +10,14 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.cindent = true
   end,
 })
+
+-------------------------------------------------------------------------------
+-- NERDTree Line Numbers
+-------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "nerdtree",
+  callback = function()
+    vim.opt_local.number = true
+    vim.opt_local.relativenumber = false
+  end,
+})

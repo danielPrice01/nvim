@@ -18,6 +18,7 @@ vim.opt.rtp:prepend(lazypath)
 require("core.options")
 require("core.keymaps")
 require("core.autocmds")
+require("core.lsp")
 
 -- 3. Load plugin specs from lua/plugins/init.lua
 local plugins = require("plugins")

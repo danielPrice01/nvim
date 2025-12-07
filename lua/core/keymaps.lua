@@ -55,6 +55,24 @@ map("n", "<leader>fD", function()
 end, { desc = "Live grep (choose directory)" })
 
 -------------------------------------------------------------------------------
+-- Go to Definition (Telescope LSP)
+-------------------------------------------------------------------------------
+map("n", "gd", function()
+  local builtin = require("telescope.builtin")
+  builtin.lsp_definitions({
+    prompt_title = "Function Definition",
+    show_line = true,
+  })
+end, { desc = "Go to definition" })
+
+-------------------------------------------------------------------------------
+-- (Optional) Direct jump to definition (no UI)
+-------------------------------------------------------------------------------
+map("n", "gD", function()
+  vim.lsp.buf.definition()
+end, { desc = "Go to definition (no UI)" })
+
+-------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
 map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
@@ -116,6 +134,12 @@ map("n", "<leader>bl", ":ls<CR>",        { desc = "List buffers" })
 -- Close all buffers except current
 map("n", "<leader>bc", ":%bd | e# | bd#<CR>", {
   desc = "Close all other buffers",
+  silent = true,
+})
+
+-- Delete current buffer and go to previous one
+map("n", "<leader>bk", ":bdelete #<CR>", {
+  desc = "Delete buffer and go to previous",
   silent = true,
 })
 
