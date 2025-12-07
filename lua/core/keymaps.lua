@@ -159,7 +159,7 @@ local function with_harpoon(callback)
 end
 
 map("n", "<leader>a", with_harpoon(function(h)
-  h:list():append()
+  h:list():add()
 end), { desc = "Harpoon add file" })
 
 map("n", "<leader>h", with_harpoon(function(h)
