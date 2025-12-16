@@ -2,6 +2,7 @@
 
 local map = vim.keymap.set
 local opts = { silent = true, noremap = true }
+
 -------------------------------------------------------------------------------
 -- Telescope (fuzzy finding)
 -------------------------------------------------------------------------------
@@ -55,22 +56,52 @@ map("n", "<leader>fD", function()
 end, { desc = "Live grep (choose directory)" })
 
 -------------------------------------------------------------------------------
--- Go to Definition (Telescope LSP)
+-- coc.nvim (manual completion only)
 -------------------------------------------------------------------------------
-map("n", "gd", function()
-  local builtin = require("telescope.builtin")
-  builtin.lsp_definitions({
-    prompt_title = "Function Definition",
-    show_line = true,
-  })
-end, { desc = "Go to definition" })
+
+-- Trigger completion manually
+map("i", "<C-n>", function()
+  vim.fn.CocActionAsync("showCompletion")
+end, { silent = true })
+
+-- Confirm completion
+map("i", "<CR>", function()
+  if vim.fn.pumvisible() == 1 then
+    return vim.api.nvim_replace_termcodes("<C-y>", true, true, true)
+  else
+    return vim.api.nvim_replace_termcodes("<CR>", true, true, true)
+  end
+end, { expr = true, silent = true })
+
+-- Cancel completion
+map("i", "<C-e>", function()
+  if vim.fn.pumvisible() == 1 then
+    return vim.api.nvim_replace_termcodes("<C-e>", true, true, true)
+  end
+  return ""
+end, { expr = true, silent = true })
 
 -------------------------------------------------------------------------------
--- (Optional) Direct jump to definition (no UI)
+-- Go to Definition / References (coc.nvim)
 -------------------------------------------------------------------------------
-map("n", "gD", function()
-  vim.lsp.buf.definition()
-end, { desc = "Go to definition (no UI)" })
+
+-- Go to definition
+map("n", "gd", "<Plug>(coc-definition)", { silent = true })
+
+-- Go to declaration
+map("n", "gD", "<Plug>(coc-declaration)", { silent = true })
+
+-- Find references
+map("n", "gr", "<Plug>(coc-references)", { silent = true })
+
+-- Go to implementation
+map("n", "gi", "<Plug>(coc-implementation)", { silent = true })
+
+-- Go to type definition
+map("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
+
+-- Hover documentation
+map("n", "K", "<Plug>(coc-hover)", { silent = true })
 
 -------------------------------------------------------------------------------
 -- File Explorer
