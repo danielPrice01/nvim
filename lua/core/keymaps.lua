@@ -100,17 +100,6 @@ map("n", "gi", "<Plug>(coc-implementation)", { silent = true })
 -- Go to type definition
 map("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
 
--- K: Coc hover if available, otherwise Man page
-map("n", "K", function()
-  local ok = pcall(vim.fn.CocAction, "hasProvider", "hover")
-  if ok and vim.fn.CocAction("hasProvider", "hover") == 1 then
-    vim.fn.CocActionAsync("doHover")
-  else
-    -- fallback: open man page for the word under cursor
-    vim.cmd("Man " .. vim.fn.expand("<cword>"))
-  end
-end, { silent = true, desc = "Hover docs (coc) or Man fallback" })
-
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
