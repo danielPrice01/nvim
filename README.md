@@ -39,7 +39,23 @@ This config is intended for:
 - **Neovim ≥ 0.9**
 - Recommended: **Neovim 0.10 / 0.11**
 
-Check your version:
+---
+
+## macOS
 
 ```sh
-nvim --version
+# Neovim
+brew install neovim
+
+# Core tools
+brew install git ripgrep fd
+
+# C / C++ tooling
+brew install llvm
+brew install clang-format
+
+# Python tooling
+brew install python
+pip3 install --user flake8 autopep8
+
+
