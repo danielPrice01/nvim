@@ -7,12 +7,6 @@ This repository contains my **Neovim configuration**, written in Lua and designe
 - **Docker containers**
 - **Windows** (recommended via WSL)
 
-The philosophy of this config is:
-- Minimal but powerful
-- Explicit control over behavior
-- No intrusive UI popups
-- Portability across machines and environments
-
 ---
 
 ## Features Overview
