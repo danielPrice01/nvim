@@ -1,3 +1,10 @@
 {
+  "suggest.autoTrigger": "none",
+  "suggest.noselect": true,
+  "suggest.enable" : false,
+  "diagnostic.enable": false,
+
+  "inlayHint.enable": false,
+
   "snippets.ultisnips.pythonPrompt": false
 }

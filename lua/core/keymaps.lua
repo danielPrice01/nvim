@@ -56,32 +56,6 @@ map("n", "<leader>fD", function()
 end, { desc = "Live grep (choose directory)" })
 
 -------------------------------------------------------------------------------
--- coc.nvim (manual completion only)
--------------------------------------------------------------------------------
-
--- Trigger completion manually
-map("i", "<C-n>", function()
-  vim.fn.CocActionAsync("showCompletion")
-end, { silent = true })
-
--- Confirm completion
-map("i", "<CR>", function()
-  if vim.fn.pumvisible() == 1 then
-    return vim.api.nvim_replace_termcodes("<C-y>", true, true, true)
-  else
-    return vim.api.nvim_replace_termcodes("<CR>", true, true, true)
-  end
-end, { expr = true, silent = true })
-
--- Cancel completion
-map("i", "<C-e>", function()
-  if vim.fn.pumvisible() == 1 then
-    return vim.api.nvim_replace_termcodes("<C-e>", true, true, true)
-  end
-  return ""
-end, { expr = true, silent = true })
-
--------------------------------------------------------------------------------
 -- Go to Definition / References (coc.nvim)
 -------------------------------------------------------------------------------
 
