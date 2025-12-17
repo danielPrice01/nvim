@@ -74,6 +74,9 @@ map("n", "gi", "<Plug>(coc-implementation)", { silent = true })
 -- Go to type definition
 map("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
 
+-- Safe rename symbol
+map("n", "<leader>rn", "<Plug>(coc-rename)", { desc = "Rename symbol" })
+
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
