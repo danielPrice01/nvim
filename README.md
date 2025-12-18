@@ -22,7 +22,7 @@ This repository contains my **Neovim configuration**, written in Lua and designe
 - Linting & formatting: **ALE**
 - Colorscheme: **gruvbox**
 - LSP support (config present)
-- Autocomplete: **coc.nvim** (manual trigger only)
+- Autocomplete: **coc.nvim**
 
 ---
 
