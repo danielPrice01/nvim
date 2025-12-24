@@ -21,67 +21,96 @@ return {
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons", -- kept for other plugins; disabled visually here
     },
     config = function()
       require("neo-tree").setup({
   
+        --------------------------------------------------------------------------
+        -- General behavior (NERDTree-like)
+        --------------------------------------------------------------------------
         close_if_last_window = true,
         popup_border_style = "rounded",
   
-        -- 🔴 Disable all git features
+        -- Fully disable git + diagnostics (NERDTree never showed these)
         enable_git_status = false,
         enable_diagnostics = false,
   
+        --------------------------------------------------------------------------
+        -- Filesystem
+        --------------------------------------------------------------------------
         filesystem = {
-          follow_current_file = {
-            enabled = true,
-          },
-  
+          follow_current_file = { enabled = true },
           hijack_netrw_behavior = "open_current",
           use_libuv_file_watcher = true,
   
-          -- 🔴 Explicitly disable git integration
-          git_status = {
-            enabled = false,
-          },
-  
-          -- 🔴 Disable diagnostics in filesystem
-          diagnostics = {
-            enabled = false,
-          },
+          git_status = { enabled = false },
+          diagnostics = { enabled = false },
         },
   
+        --------------------------------------------------------------------------
+        -- Window layout (classic left sidebar)
+        --------------------------------------------------------------------------
         window = {
           position = "left",
           width = 25,
+          mappings = {
+            ["<CR>"] = "open",     -- open file / expand dir
+            ["l"]    = "open",
+            ["h"]    = "close_node",
+          },
         },
   
-        -- 🔴 Remove extra UI clutter
+        --------------------------------------------------------------------------
+        -- Visuals: make it feel like NERDTree, but cleaner
+        --------------------------------------------------------------------------
         default_component_configs = {
-          git_status = {
-            symbols = {}, -- no git symbols at all
+  
+          -- 🔴 No icons at all
+          icon = {
+            folder_closed = "",
+            folder_open   = "",
+            folder_empty  = "",
+            default       = "",
           },
   
-          diagnostics = {
-            symbols = {}, -- no diagnostics symbols
-          },
+          -- 🔴 No git / diagnostics symbols
+          git_status  = { symbols = {} },
+          diagnostics = { symbols = {} },
   
-          file_size = {
-            enabled = false,
-          },
+          -- 🔴 Remove extra metadata columns
+          file_size     = { enabled = false },
+          type          = { enabled = false },
+          last_modified = { enabled = false },
+          created       = { enabled = false },
   
-          type = {
-            enabled = false,
-          },
+          -- 🔴 No modified symbol
+          modified = { symbol = "" },
+        },
   
-          last_modified = {
-            enabled = false,
-          },
+        --------------------------------------------------------------------------
+        -- Indentation: simple tree, no arrows or clutter
+        --------------------------------------------------------------------------
+        indent = {
+          indent_size = 2,
+          padding = 0,
+          with_markers = false,
+          indent_marker = "",
+          last_indent_marker = "",
+          expander_collapsed = "",
+          expander_expanded = "",
+        },
   
-          created = {
-            enabled = false,
+        --------------------------------------------------------------------------
+        -- Renderers: ONLY names (closest to NERDTree look)
+        --------------------------------------------------------------------------
+        renderers = {
+          directory = {
+            { "name" },
+          },
+          file = {
+            { "name" },
           },
         },
       })
