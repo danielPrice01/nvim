@@ -41,25 +41,38 @@ opt.undodir = undodir
 -- Shell
 opt.shell = "/bin/bash"
 
--- Clipboard (macOS)
-opt.clipboard = { "unnamed", "unnamedplus" }
-if fn.has("mac") == 1 or fn.has("macunix") == 1 then
-  g.clipboard = {
-    name = "macOS-clipboard",
-    copy = {
-      ["+"] = "pbcopy",
-      ["*"] = "pbcopy",
-    },
-    paste = {
-      ["+"] = "pbpaste",
-      ["*"] = "pbpaste",
-    },
-    cache_enabled = 0,
-  }
-end
+-- Clipboard (portable default: don't force system clipboard everywhere)
+-- If you want system clipboard on all OSes, set: opt.clipboard = "unnamedplus"
+opt.clipboard = ""
 
 -- Disable default matchparen
 opt.showmatch = false
 g.loaded_matchparen = 1
 
 vim.cmd("filetype plugin indent on")
+
+-- Oil: make prompts use command-line instead of popups (minimal UI)
+vim.ui.input = function(opts, on_confirm)
+  local prompt = (opts and opts.prompt) or ""
+  local default = (opts and opts.default) or ""
+  local result = vim.fn.input(prompt, default)
+  on_confirm(result)
+end
+
+vim.ui.select = function(items, opts, on_choice)
+  local prompt = ((opts and opts.prompt) or "Select") .. "\n"
+  local lines = {}
+  for i, item in ipairs(items) do
+    local label = item
+    if type(item) == "table" and opts and opts.format_item then
+      label = opts.format_item(item)
+    end
+    lines[#lines + 1] = string.format("%d. %s", i, tostring(label))
+  end
+  local choice = tonumber(vim.fn.input(prompt .. table.concat(lines, "\n") .. "\n> "))
+  if choice and items[choice] then
+    on_choice(items[choice], choice)
+  else
+    on_choice(nil, nil)
+  end
+end

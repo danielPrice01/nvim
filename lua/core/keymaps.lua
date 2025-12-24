@@ -23,6 +23,7 @@ map("n", "<leader>fl", function()
     prompt_title = "Live Grep (This Directory Only)",
     cwd = vim.loop.cwd(),
     additional_args = function()
+      -- NOTE: this is passed to ripgrep (rg). It requires rg >= 13.
       return { "--max-depth", "1" }
     end,
   })
@@ -39,8 +40,8 @@ map("n", "<leader>fD", function()
     cwd = vim.loop.cwd(),
     find_command = { "fd", "-t", "d" },
 
-    attach_mappings = function(prompt_bufnr, map)
-      map("i", "<CR>", function()
+    attach_mappings = function(prompt_bufnr, map2)
+      map2("i", "<CR>", function()
         local entry = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
         local dir = entry.path or entry.value
@@ -56,31 +57,75 @@ map("n", "<leader>fD", function()
 end, { desc = "Live grep (choose directory)" })
 
 -------------------------------------------------------------------------------
--- Go to Definition / References (coc.nvim)
+-- LSP (builtin) navigation / refactor
 -------------------------------------------------------------------------------
-
--- Go to definition
-map("n", "gd", "<Plug>(coc-definition)", { silent = true })
-
--- Go to declaration
-map("n", "gD", "<Plug>(coc-declaration)", { silent = true })
-
--- Find references
-map("n", "gr", "<Plug>(coc-references)", { silent = true })
-
--- Go to implementation
-map("n", "gi", "<Plug>(coc-implementation)", { silent = true })
-
--- Go to type definition
-map("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
-
--- Safe rename symbol
-map("n", "<leader>rn", "<Plug>(coc-rename)", { desc = "Rename symbol" })
+map("n", "gd", function() vim.lsp.buf.definition() end, { desc = "Go to definition" })
+map("n", "gD", function() vim.lsp.buf.declaration() end, { desc = "Go to declaration" })
+map("n", "gr", function() vim.lsp.buf.references() end, { desc = "Find references" })
+map("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to implementation" })
+map("n", "gy", function() vim.lsp.buf.type_definition() end, { desc = "Go to type definition" })
+map("n", "<leader>rn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
 
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
-map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
+-- Neo-tree (primary sidebar)
+map("n", "<leader>e", "<cmd>Neotree toggle left<CR>", { desc = "Toggle Neo-tree" })
+
+-- Oil (filesystem editing buffer)
+-- Oil sidebar (left) that stays open; <CR> opens files on the right
+map("n", "<leader>E", function()
+  -- If Oil window exists, close it (toggle)
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype == "oil" then
+      vim.api.nvim_win_close(win, true)
+      return
+    end
+  end
+
+  -- Open Oil in left split and focus it
+  vim.cmd("topleft vsplit")
+  vim.cmd("vertical resize 25")
+  vim.cmd("Oil")
+end, { desc = "Toggle Oil sidebar" })
+
+-- In Oil: <CR> opens files in the RIGHT window (keeps Oil open),
+-- directories stay in Oil.
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "oil",
+  callback = function(ev)
+    local oil = require("oil")
+
+    vim.keymap.set("n", "<CR>", function()
+      local entry = oil.get_cursor_entry()
+      if not entry then return end
+
+      -- If directory: navigate inside Oil
+      if entry.type == "directory" then
+        oil.select()
+        return
+      end
+
+      -- Ensure there's a right-side window
+      local sidebar_win = vim.api.nvim_get_current_win()
+      local wins = vim.api.nvim_tabpage_list_wins(0)
+      if #wins == 1 then
+        vim.cmd("rightbelow vsplit")
+      end
+
+      -- Go to right window and open file there
+      vim.cmd("wincmd l")
+
+      local dir = oil.get_current_dir() or ""
+      local path = dir .. entry.name
+      vim.cmd("edit " .. vim.fn.fnameescape(path))
+
+      -- Return focus to Oil (keeps it acting like a sidebar)
+      vim.api.nvim_set_current_win(sidebar_win)
+    end, { buffer = ev.buf, silent = true, noremap = true })
+  end,
+})
 
 -------------------------------------------------------------------------------
 -- Window Resizing
@@ -89,37 +134,26 @@ map("n", "<leader>e", ":NERDTreeToggle<CR>", { desc = "File explorer" })
 map("n", "<leader>+", function()
   local step = 5 * vim.v.count1
   vim.cmd("resize +" .. step)
-end, {
-  desc = "Increase window height",
-  silent = true,
-})
+end, { desc = "Increase window height", silent = true })
 
 -- Decrease window height
 map("n", "<leader>-", function()
   local step = 5 * vim.v.count1
   vim.cmd("resize -" .. step)
-end, {
-  desc = "Decrease window height",
-  silent = true,
-})
+end, { desc = "Decrease window height", silent = true })
 
 -- Decrease window width
 map("n", "<leader><", function()
   local step = 5 * vim.v.count1
   vim.cmd("vertical resize -" .. step)
-end, {
-  desc = "Decrease window width",
-  silent = true,
-})
+end, { desc = "Decrease window width", silent = true })
 
 -- Increase window width
 map("n", "<leader>>", function()
   local step = 5 * vim.v.count1
   vim.cmd("vertical resize +" .. step)
-end, {
-  desc = "Increase window width",
-  silent = true,
-})
+end, { desc = "Increase window width", silent = true })
+
 -------------------------------------------------------------------------------
 -- Window Management
 -------------------------------------------------------------------------------
@@ -187,6 +221,10 @@ map("n", "<leader>r", ":Lazy reload<CR>", { desc = "Reload config" })
 -------------------------------------------------------------------------------
 map("n", "<C-d>", "<C-d>zz", opts)
 map("n", "<C-u>", "<C-u>zz", opts)
+
+-- Center screen after jump list navigation
+map("n", "<C-o>", "<C-o>zz", opts)
+map("n", "<C-i>", "<C-i>zz", opts)
 
 -- Exit terminal mode quickly
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)

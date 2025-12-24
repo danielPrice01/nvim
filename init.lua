@@ -19,7 +19,6 @@ require("core.options")
 require("core.keymaps")
 require("core.autocmds")
 require("core.lsp")
-require("core.coc")
 
 -- 3. Load plugin specs from lua/plugins/init.lua
 local plugins = require("plugins")

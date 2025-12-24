@@ -14,14 +14,104 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- File Tree
+  -- Neo-tree (Primary File Explorer Sidebar)
   ------------------------------------------------------------------------------
   {
-    "preservim/nerdtree",
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "MunifTanjim/nui.nvim",
+    },
+    config = function()
+      require("neo-tree").setup({
+  
+        close_if_last_window = true,
+        popup_border_style = "rounded",
+  
+        -- 🔴 Disable all git features
+        enable_git_status = false,
+        enable_diagnostics = false,
+  
+        filesystem = {
+          follow_current_file = {
+            enabled = true,
+          },
+  
+          hijack_netrw_behavior = "open_current",
+          use_libuv_file_watcher = true,
+  
+          -- 🔴 Explicitly disable git integration
+          git_status = {
+            enabled = false,
+          },
+  
+          -- 🔴 Disable diagnostics in filesystem
+          diagnostics = {
+            enabled = false,
+          },
+        },
+  
+        window = {
+          position = "left",
+          width = 25,
+        },
+  
+        -- 🔴 Remove extra UI clutter
+        default_component_configs = {
+          git_status = {
+            symbols = {}, -- no git symbols at all
+          },
+  
+          diagnostics = {
+            symbols = {}, -- no diagnostics symbols
+          },
+  
+          file_size = {
+            enabled = false,
+          },
+  
+          type = {
+            enabled = false,
+          },
+  
+          last_modified = {
+            enabled = false,
+          },
+  
+          created = {
+            enabled = false,
+          },
+        },
+      })
+    end,
   },
 
   ------------------------------------------------------------------------------
-  -- ALE (Linter / Formatter)
+  -- Oil.nvim (Filesystem-as-buffer editing)
+  ------------------------------------------------------------------------------
+  {
+    "stevearc/oil.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = "Oil",
+    keys = {
+      { "<leader>E", "<cmd>Oil<CR>", desc = "Open Oil (edit filesystem)" },
+    },
+    config = function()
+      require("oil").setup({
+        default_file_explorer = false, -- Neo-tree handles browsing
+        columns = { "icon" },
+        view_options = {
+          show_hidden = false,
+        },
+        skip_confirm_for_simple_edits = false,
+      })
+    end,
+  },
+
+  ------------------------------------------------------------------------------
+  -- ALE (Linting / Formatting)
   ------------------------------------------------------------------------------
   {
     "dense-analysis/ale",
@@ -31,15 +121,21 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Autocomplete (coc.nvim)
+  -- Comment.nvim (gc / gcc)
   ------------------------------------------------------------------------------
   {
-    "neoclide/coc.nvim",
-    branch = "release",
+    "numToStr/Comment.nvim",
+    keys = {
+      { "gc", mode = { "n", "v" }, desc = "Toggle comment" },
+      { "gcc", desc = "Toggle comment line" },
+    },
+    config = function()
+      require("Comment").setup()
+    end,
   },
 
   ------------------------------------------------------------------------------
-  -- Which-Key (shows <leader> maps)
+  -- Which-Key
   ------------------------------------------------------------------------------
   {
     "folke/which-key.nvim",
@@ -50,7 +146,7 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Statusline (Lualine)
+  -- Statusline
   ------------------------------------------------------------------------------
   {
     "nvim-lualine/lualine.nvim",
@@ -61,7 +157,7 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Bufferline (top buffer tabs)
+  -- Bufferline
   ------------------------------------------------------------------------------
   {
     "akinsho/bufferline.nvim",
@@ -72,19 +168,19 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Treesitter (better syntax & highlighting)
+  -- Treesitter
   ------------------------------------------------------------------------------
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    lazy = false,   -- <<< IMPORTANT FIX — load Treesitter at startup
+    lazy = false,
     config = function()
       require("plugins.treesitter")
     end,
   },
 
   ------------------------------------------------------------------------------
-  -- Treesitter Context (sticky scope header)
+  -- Treesitter Context
   ------------------------------------------------------------------------------
   {
     "nvim-treesitter/nvim-treesitter-context",
@@ -93,16 +189,19 @@ return {
     end,
   },
 
-
   ------------------------------------------------------------------------------
-  -- LSP Config (required for clangd, gd, etc.)
+  -- LSP Config (builtin LSP only)
   ------------------------------------------------------------------------------
   {
     "neovim/nvim-lspconfig",
+    lazy = false,
+    config = function()
+      require("core.lsp")
+    end,
   },
 
   ------------------------------------------------------------------------------
-  -- Harpoon 2 (quick-switching files)
+  -- Harpoon 2
   ------------------------------------------------------------------------------
   {
     "ThePrimeagen/harpoon",
@@ -115,7 +214,7 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Devicons (filetype icons)
+  -- Devicons
   ------------------------------------------------------------------------------
   {
     "nvim-tree/nvim-web-devicons",
@@ -123,7 +222,7 @@ return {
   },
 
   ------------------------------------------------------------------------------
-  -- Telescope (Fuzzy finder)
+  -- Telescope
   ------------------------------------------------------------------------------
   {
     "nvim-telescope/telescope.nvim",
