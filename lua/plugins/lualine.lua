@@ -7,12 +7,12 @@ end
 
 lualine.setup({
   options = {
-    theme = "gruvbox",
+    theme = "auto",
     icons_enabled = true,
 
     -- Rounded powerline separators
-    section_separators = { left = "", right = "" },
-    component_separators = { left = "", right = "" },
+    section_separators = "",
+    component_separators = "",
   },
 
   sections = {

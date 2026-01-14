@@ -14,10 +14,11 @@ bufferline.setup({
 
     -- ENABLE ICONS
     show_buffer_icons = true,
-    show_buffer_close_icons = true,
-    show_close_icon = true,
+    show_buffer_close_icons = false,
+    show_close_icon = false,
 
-    separator_style = "slant",
+    -- options are: slant, thin, thick, padded_slant
+    separator_style = "thin",
 
     -- Optional but improves visuals
     diagnostics = false,      -- or "nvim_lsp" if you want LSP symbols

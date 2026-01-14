@@ -3,13 +3,21 @@
 return {
 
   ------------------------------------------------------------------------------
-  -- Colorscheme
+  -- Colorschemes
   ------------------------------------------------------------------------------
   {
     "morhetz/gruvbox",
     priority = 1000,
     config = function()
       require("plugins.colorscheme")
+    end,
+  },
+
+  {
+    "rebelot/kanagawa.nvim",
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme("kanagawa-lotus")
     end,
   },
 
