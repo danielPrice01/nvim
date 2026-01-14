@@ -10,10 +10,10 @@ g.maplocalleader = " "
 vim.cmd("syntax on")
 
 -- Indentation
-opt.tabstop = 4
-opt.shiftwidth = 4
+opt.tabstop = 2
+opt.shiftwidth = 2
 opt.expandtab = true
-opt.softtabstop = 4
+opt.softtabstop = 2
 opt.autoindent = true
 opt.smartindent = true
 
@@ -42,7 +42,6 @@ opt.undodir = undodir
 opt.shell = "/bin/bash"
 
 -- Clipboard (portable default: don't force system clipboard everywhere)
--- If you want system clipboard on all OSes, set: opt.clipboard = "unnamedplus"
 opt.clipboard = ""
 
 -- Disable default matchparen
@@ -51,7 +50,13 @@ g.loaded_matchparen = 1
 
 vim.cmd("filetype plugin indent on")
 
--- Oil: make prompts use command-line instead of popups (minimal UI)
+-- Treesitter folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldlevel = 99       -- start unfolded
+vim.opt.foldenable = true
+
+-- Forces ui elements to use CLI
 vim.ui.input = function(opts, on_confirm)
   local prompt = (opts and opts.prompt) or ""
   local default = (opts and opts.default) or ""

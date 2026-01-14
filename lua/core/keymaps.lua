@@ -6,55 +6,47 @@ local opts = { silent = true, noremap = true }
 -------------------------------------------------------------------------------
 -- Telescope (fuzzy finding)
 -------------------------------------------------------------------------------
+local function telescope_builtin()
+  local ok, builtin = pcall(require, "telescope.builtin")
+  if not ok then
+    vim.notify("Telescope is not loaded yet", vim.log.levels.WARN)
+    return nil
+  end
+  return builtin
+end
 
--- Live grep from CWD
-map("n", "<leader>fg", function()
-  local builtin = require("telescope.builtin")
-  builtin.live_grep({
-    prompt_title = "Live Grep (CWD)",
-    cwd = vim.loop.cwd(),
+vim.keymap.set("n", "<leader>ff", function()
+  local b = telescope_builtin()
+  if b then b.find_files() end
+end, { desc = "Find files" })
+
+vim.keymap.set("n", "<leader>fg", function()
+  local b = telescope_builtin()
+  if b then b.live_grep() end
+end, { desc = "Live grep" })
+
+vim.keymap.set("n", "<leader>fb", function()
+  local b = telescope_builtin()
+  if b then b.buffers() end
+end, { desc = "List buffers" })
+
+vim.keymap.set("n", "<leader>fh", function()
+  local b = telescope_builtin()
+  if b then b.help_tags() end
+end, { desc = "Help tags" })
+-------------------------------------------------------------------------------
+-- Flash
+-------------------------------------------------------------------------------
+vim.keymap.set("n", "<leader>s", function()
+  require("flash").jump({
+    search = {
+      mode = "search",
+    },
+    jump = {
+      autojump = false,
+    },
   })
-end, { desc = "Live grep (cwd)" })
-
--- Live grep but ONLY in current directory (no recursion)
-map("n", "<leader>fl", function()
-  local builtin = require("telescope.builtin")
-  builtin.live_grep({
-    prompt_title = "Live Grep (This Directory Only)",
-    cwd = vim.loop.cwd(),
-    additional_args = function()
-      -- NOTE: this is passed to ripgrep (rg). It requires rg >= 13.
-      return { "--max-depth", "1" }
-    end,
-  })
-end, { desc = "Live grep (local dir only)" })
-
--- Directory picker → then grep
-map("n", "<leader>fD", function()
-  local builtin = require("telescope.builtin")
-  local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
-
-  builtin.find_files({
-    prompt_title = "Choose Directory",
-    cwd = vim.loop.cwd(),
-    find_command = { "fd", "-t", "d" },
-
-    attach_mappings = function(prompt_bufnr, map2)
-      map2("i", "<CR>", function()
-        local entry = action_state.get_selected_entry()
-        actions.close(prompt_bufnr)
-        local dir = entry.path or entry.value
-
-        builtin.live_grep({
-          prompt_title = ("Live Grep (%s)"):format(dir),
-          cwd = dir,
-        })
-      end)
-      return true
-    end,
-  })
-end, { desc = "Live grep (choose directory)" })
+end, { desc = "Flash jump" })
 
 -------------------------------------------------------------------------------
 -- LSP (builtin) navigation / refactor
@@ -66,6 +58,11 @@ map("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to impl
 map("n", "gy", function() vim.lsp.buf.type_definition() end, { desc = "Go to type definition" })
 map("n", "<leader>rn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
 
+-- K should have default functionality
+vim.keymap.set("n", "K", function()
+  vim.cmd("normal! K")
+end, { silent = true })
+
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
@@ -73,9 +70,14 @@ map("n", "<leader>rn", function() vim.lsp.buf.rename() end, { desc = "Rename sym
 map("n", "<leader>e", "<cmd>Neotree toggle left<CR>", { desc = "Toggle Neo-tree" })
 
 -- Oil (filesystem editing buffer)
--- Oil sidebar (left) that stays open; <CR> opens files on the right
 map("n", "<leader>E", function()
-  -- If Oil window exists, close it (toggle)
+  -- If we're already in an Oil buffer, close it (toggle)
+  if vim.bo.filetype == "oil" then
+    vim.cmd("bd")
+    return
+  end
+
+  -- If any Oil window exists, close it (toggle off)
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
     if vim.bo[buf].filetype == "oil" then
@@ -84,75 +86,9 @@ map("n", "<leader>E", function()
     end
   end
 
-  -- Open Oil in left split and focus it
-  vim.cmd("topleft vsplit")
-  vim.cmd("vertical resize 25")
+  -- Open Oil fullscreen in the current window
   vim.cmd("Oil")
-end, { desc = "Toggle Oil sidebar" })
-
--- In Oil: <CR> opens files in the RIGHT window (keeps Oil open),
--- directories stay in Oil.
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "oil",
-  callback = function(ev)
-    local oil = require("oil")
-
-    vim.keymap.set("n", "<CR>", function()
-      local entry = oil.get_cursor_entry()
-      if not entry then return end
-
-      -- If directory: navigate inside Oil
-      if entry.type == "directory" then
-        oil.select()
-        return
-      end
-
-      -- Ensure there's a right-side window
-      local sidebar_win = vim.api.nvim_get_current_win()
-      local wins = vim.api.nvim_tabpage_list_wins(0)
-      if #wins == 1 then
-        vim.cmd("rightbelow vsplit")
-      end
-
-      -- Go to right window and open file there
-      vim.cmd("wincmd l")
-
-      local dir = oil.get_current_dir() or ""
-      local path = dir .. entry.name
-      vim.cmd("edit " .. vim.fn.fnameescape(path))
-
-      -- Return focus to Oil (keeps it acting like a sidebar)
-      vim.api.nvim_set_current_win(sidebar_win)
-    end, { buffer = ev.buf, silent = true, noremap = true })
-  end,
-})
-
--------------------------------------------------------------------------------
--- Window Resizing
--------------------------------------------------------------------------------
--- Increase window height
-map("n", "<leader>+", function()
-  local step = 5 * vim.v.count1
-  vim.cmd("resize +" .. step)
-end, { desc = "Increase window height", silent = true })
-
--- Decrease window height
-map("n", "<leader>-", function()
-  local step = 5 * vim.v.count1
-  vim.cmd("resize -" .. step)
-end, { desc = "Decrease window height", silent = true })
-
--- Decrease window width
-map("n", "<leader><", function()
-  local step = 5 * vim.v.count1
-  vim.cmd("vertical resize -" .. step)
-end, { desc = "Decrease window width", silent = true })
-
--- Increase window width
-map("n", "<leader>>", function()
-  local step = 5 * vim.v.count1
-  vim.cmd("vertical resize +" .. step)
-end, { desc = "Increase window width", silent = true })
+end, { desc = "Oil (fullscreen toggle)" })
 
 -------------------------------------------------------------------------------
 -- Window Management
@@ -160,6 +96,12 @@ end, { desc = "Increase window width", silent = true })
 map("n", "<leader>wv", "<C-w>v", opts)
 map("n", "<leader>ws", "<C-w>s", opts)
 map("n", "<leader>wx", "<C-w>c", opts)
+
+-- Open terminal in current window
+map("n", "<leader>wt", function()
+  vim.cmd("terminal")
+  vim.cmd("startinsert")
+end, { desc = "Open terminal in current window", silent = true })
 
 -------------------------------------------------------------------------------
 -- Buffer Management
@@ -170,11 +112,15 @@ map("n", "<leader>bN", ":enew<CR>",      { desc = "New empty buffer" })
 map("n", "<leader>bd", ":bdelete<CR>",   { desc = "Delete buffer" })
 map("n", "<leader>bl", ":ls<CR>",        { desc = "List buffers" })
 
--- Close all buffers except current
-map("n", "<leader>bc", ":%bd | e# | bd#<CR>", {
-  desc = "Close all other buffers",
-  silent = true,
-})
+-- Close all buffers except current (no cursor jump)
+map("n", "<leader>bc", function()
+  local current = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
+      vim.api.nvim_buf_delete(buf, {})
+    end
+  end
+end, { desc = "Close all other buffers", silent = true })
 
 -- Delete current buffer and go to previous one
 map("n", "<leader>bk", ":bdelete #<CR>", {
@@ -185,7 +131,6 @@ map("n", "<leader>bk", ":bdelete #<CR>", {
 -------------------------------------------------------------------------------
 -- Harpoon (lazy-safe!)
 -------------------------------------------------------------------------------
-
 local function with_harpoon(callback)
   return function(...)
     local ok, harpoon = pcall(require, "harpoon")
@@ -217,14 +162,42 @@ map("n", "<leader>5", with_harpoon(function(h) h:list():select(5) end))
 map("n", "<leader>r", ":Lazy reload<CR>", { desc = "Reload config" })
 
 -------------------------------------------------------------------------------
+-- FloatingWindow
+-------------------------------------------------------------------------------
+vim.keymap.set(
+  "n",
+  "<leader>fl",
+  function()
+    vim.cmd("FlWin")
+  end,
+  { desc = "Toggle floating window" }
+)
+
+-------------------------------------------------------------------------------
 -- Quality of Life
 -------------------------------------------------------------------------------
+-- :noh
+vim.keymap.set("n", "<leader>no", ":noh<CR>", { silent = false })
+
+-- center screen after half page jumps
 map("n", "<C-d>", "<C-d>zz", opts)
 map("n", "<C-u>", "<C-u>zz", opts)
 
 -- Center screen after jump list navigation
 map("n", "<C-o>", "<C-o>zz", opts)
 map("n", "<C-i>", "<C-i>zz", opts)
+
+-- Recenter after jumping to a mark
+local function jump_to_mark_and_center(cmd)
+  return function()
+    local mark = vim.fn.getcharstr()          -- read the next key (mark name)
+    vim.cmd("normal! " .. cmd .. mark)        -- jump
+    vim.cmd("normal! zz")                     -- recenter
+  end
+end
+
+vim.keymap.set("n", "'", jump_to_mark_and_center("'"), { noremap = true, silent = true })
+vim.keymap.set("n", "`", jump_to_mark_and_center("`"), { noremap = true, silent = true })
 
 -- Exit terminal mode quickly
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)

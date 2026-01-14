@@ -122,15 +122,11 @@ return {
   ------------------------------------------------------------------------------
   {
     "stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = "Oil",
-    keys = {
-      { "<leader>E", "<cmd>Oil<CR>", desc = "Open Oil (edit filesystem)" },
-    },
     config = function()
       require("oil").setup({
-        default_file_explorer = false, -- Neo-tree handles browsing
-        columns = { "icon" },
+        default_file_explorer = false, -- Neo-tree is primary
+        columns = {},                 -- no icons, minimal look
         view_options = {
           show_hidden = false,
         },
@@ -150,6 +146,21 @@ return {
   },
 
   ------------------------------------------------------------------------------
+  -- Flash (quicker search)
+  ------------------------------------------------------------------------------
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {
+      modes = {
+        char = {
+          enabled = false,
+        },
+      },
+    },
+  },
+
+  ------------------------------------------------------------------------------
   -- Comment.nvim (gc / gcc)
   ------------------------------------------------------------------------------
   {
@@ -166,13 +177,13 @@ return {
   ------------------------------------------------------------------------------
   -- Which-Key
   ------------------------------------------------------------------------------
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("which-key").setup()
-    end,
-  },
+  -- {
+  --   "folke/which-key.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("which-key").setup()
+  --   end,
+  -- },
 
   ------------------------------------------------------------------------------
   -- Statusline
@@ -238,7 +249,7 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     event = "VeryLazy",
     config = function()
-      require("plugins.harpoon")
+      require("harpoon"):setup()
     end,
   },
 
@@ -262,4 +273,27 @@ return {
     end,
   },
 
+  ------------------------------------------------------------------------------
+  -- FloatingWindow
+  ------------------------------------------------------------------------------
+  {
+    "danielPrice01/FloatingWindow",
+    config = function()
+      require("floatingwin").setup()
+    end,
+  },
+
+  ------------------------------------------------------------------------------
+  -- Home
+  ------------------------------------------------------------------------------
+  {
+    "danielPrice01/home",
+    lazy = false, -- needs to run on startup to register VimEnter autocmd
+    priority = 900, -- load early-ish (below colorscheme if you want)
+    config = function()
+      require("home").setup()
+    end,
+  },
+
 }
+
