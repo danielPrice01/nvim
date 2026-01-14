@@ -52,9 +52,11 @@ vim.cmd("filetype plugin indent on")
 
 -- Treesitter folding
 vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99       -- start unfolded
 vim.opt.foldenable = true
+-- zc (close fold), zo (open fold), za (toggle fold), zM (close all), zR (open all)
+-- can navigate with zj, zk
 
 -- Forces ui elements to use CLI
 vim.ui.input = function(opts, on_confirm)
