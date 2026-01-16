@@ -58,11 +58,6 @@ map("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to impl
 map("n", "gy", function() vim.lsp.buf.type_definition() end, { desc = "Go to type definition" })
 map("n", "<leader>rn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
 
--- K should have default functionality
-vim.keymap.set("n", "K", function()
-  vim.cmd("normal! K")
-end, { silent = true })
-
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
@@ -89,6 +84,9 @@ map("n", "<leader>E", function()
   -- Open Oil fullscreen in the current window
   vim.cmd("Oil")
 end, { desc = "Oil (fullscreen toggle)" })
+
+-- K => man page (always)
+vim.keymap.set("n", "K", "<cmd>Man<cr>", { silent = true })
 
 -------------------------------------------------------------------------------
 -- Window Management

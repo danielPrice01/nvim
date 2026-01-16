@@ -30,6 +30,10 @@ opt.splitbelow = true
 opt.splitright = true
 opt.backspace = { "indent", "eol", "start" }
 
+-- for LSP command line
+vim.o.more = false
+opt.updatetime = 200
+
 -- Undo
 local undodir = fn.expand("~/.config/nvim/undodir")
 if fn.isdirectory(undodir) == 0 then
