@@ -2,7 +2,7 @@
 vim.opt.background = "dark"
 
 -- default theme
-vim.cmd.colorscheme("kanagawa-dragon")
+vim.cmd.colorscheme("kanagawa-wave")
 
 local function set_theme(name)
   local ok, err = pcall(vim.cmd.colorscheme, name)

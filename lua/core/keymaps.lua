@@ -34,6 +34,7 @@ vim.keymap.set("n", "<leader>fh", function()
   local b = telescope_builtin()
   if b then b.help_tags() end
 end, { desc = "Help tags" })
+
 -------------------------------------------------------------------------------
 -- Flash
 -------------------------------------------------------------------------------
@@ -58,6 +59,13 @@ map("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to impl
 map("n", "gy", function() vim.lsp.buf.type_definition() end, { desc = "Go to type definition" })
 map("n", "<leader>rn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
 
+map("n", "[d", function() vim.diagnostic.goto_prev({ severity = { min = vim.diagnostic.severity.WARN }, float = false, }) end,
+    { desc = "Go to previous error/warning" })
+
+map("n", "]d", function() vim.diagnostic.goto_next({ severity = { min = vim.diagnostic.severity.WARN }, float = false, }) end,
+    { desc = "Go to next error/warning" })
+
+map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, { desc = "Code action" })
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
@@ -87,6 +95,10 @@ end, { desc = "Oil (fullscreen toggle)" })
 
 -- K => man page (always)
 vim.keymap.set("n", "K", "<cmd>Man<cr>", { silent = true })
+
+map("n", "<leader>w", "<cmd>w<CR>", { desc = "Write file" })
+map("n", "<leader>x", "<cmd>x<CR>", { desc = "Write + quit" })
+map("n", "<leader>qq", "<cmd>qa<CR>", { desc = "Quit all" })
 
 -------------------------------------------------------------------------------
 -- Window Management
@@ -199,3 +211,4 @@ vim.keymap.set("n", "`", jump_to_mark_and_center("`"), { noremap = true, silent 
 
 -- Exit terminal mode quickly
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)
+
