@@ -138,6 +138,10 @@ map("n", "<leader>bk", ":bdelete #<CR>", {
   silent = true,
 })
 
+map("n", "<leader>bt", function()
+  require("plugins.bufterm").goto_term()
+end, { desc = "Jump to terminal buffer" })
+
 -------------------------------------------------------------------------------
 -- Harpoon (lazy-safe!)
 -------------------------------------------------------------------------------
