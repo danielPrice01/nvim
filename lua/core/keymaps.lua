@@ -35,6 +35,16 @@ vim.keymap.set("n", "<leader>fh", function()
   if b then b.help_tags() end
 end, { desc = "Help tags" })
 
+vim.keymap.set("n", "<leader>fm", function()
+  local b = telescope_builtin()
+  if b then b.marks() end
+end, { desc = "Find marks" })
+
+vim.keymap.set("n", "<leader>fr", function()
+  local b = telescope_builtin()
+  if b then b.registers() end
+end, { desc = "Find registers" })
+
 -------------------------------------------------------------------------------
 -- Flash
 -------------------------------------------------------------------------------
