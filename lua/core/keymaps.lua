@@ -59,6 +59,12 @@ vim.keymap.set("n", "<leader>s", function()
   })
 end, { desc = "Flash jump" })
 
+------------------------------------------------------------------------------
+-- Comment.nvim 
+------------------------------------------------------------------------------
+map({ "n", "v" }, "gc", "<Plug>(comment_toggle_linewise)", { desc = "Toggle comment" })
+map("n", "gcc", "<Plug>(comment_toggle_linewise_current)", { desc = "Toggle comment line" })
+
 -------------------------------------------------------------------------------
 -- LSP (builtin) navigation / refactor
 -------------------------------------------------------------------------------
@@ -76,6 +82,7 @@ map("n", "]d", function() vim.diagnostic.goto_next({ severity = { min = vim.diag
     { desc = "Go to next error/warning" })
 
 map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, { desc = "Code action" })
+
 -------------------------------------------------------------------------------
 -- File Explorer
 -------------------------------------------------------------------------------
@@ -181,11 +188,6 @@ map("n", "<leader>4", with_harpoon(function(h) h:list():select(4) end))
 map("n", "<leader>5", with_harpoon(function(h) h:list():select(5) end))
 
 -------------------------------------------------------------------------------
--- Reload Config
--------------------------------------------------------------------------------
-map("n", "<leader>r", ":Lazy reload<CR>", { desc = "Reload config" })
-
--------------------------------------------------------------------------------
 -- FloatingWindow
 -------------------------------------------------------------------------------
 vim.keymap.set(
@@ -202,6 +204,10 @@ vim.keymap.set(
 -------------------------------------------------------------------------------
 -- :noh
 vim.keymap.set("n", "<leader>no", ":noh<CR>", { silent = false })
+
+map("n", "ss", function()
+  vim.cmd("normal! s")
+end, { desc = "Substitute char" })
 
 -- center screen after half page jumps
 map("n", "<C-d>", "<C-d>zz", opts)

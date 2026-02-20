@@ -1,4 +1,4 @@
--- init.lua
+-- inia.lua
 
 -- 1. Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
