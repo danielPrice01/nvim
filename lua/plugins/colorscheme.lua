@@ -2,7 +2,7 @@
 vim.opt.background = "dark"
 
 -- default theme
-vim.cmd.colorscheme("kanagawa-wave")
+vim.cmd.colorscheme("habamax")
 
 local function set_theme(name)
   local ok, err = pcall(vim.cmd.colorscheme, name)
@@ -12,6 +12,10 @@ local function set_theme(name)
 end
 
 -- Commands
+vim.api.nvim_create_user_command("Habamax", function()
+  set_theme("habamax")
+end, {})
+
 vim.api.nvim_create_user_command("Gruvbox", function()
   set_theme("gruvbox")
 end, {})
