@@ -29,3 +29,5 @@ require("lazy").setup(plugins, {
     notify = false,
   },
 })
+
+require("plugins.colorscheme")
