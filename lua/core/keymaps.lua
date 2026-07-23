@@ -232,3 +232,7 @@ vim.keymap.set("n", "`", jump_to_mark_and_center("`"), { noremap = true, silent 
 -- Exit terminal mode quickly
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)
 
+map("i", "<M-h>", "<Left>",  opts)
+map("i", "<M-j>", "<Down>",  opts)
+map("i", "<M-k>", "<Up>",    opts)
+map("i", "<M-l>", "<Right>", opts)
