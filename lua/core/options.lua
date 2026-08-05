@@ -10,10 +10,10 @@ g.maplocalleader = " "
 vim.cmd("syntax on")
 
 -- Indentation
-opt.tabstop = 2
-opt.shiftwidth = 2
+opt.tabstop = 8
+opt.shiftwidth = 8
 opt.expandtab = true
-opt.softtabstop = 2
+opt.softtabstop = 8
 opt.autoindent = true
 opt.smartindent = true
 
